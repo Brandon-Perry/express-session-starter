@@ -1,9 +1,33 @@
 
 const express = require('express');
+const session = require('express-session')
 
 const app = express();
 
 app.set('view engine', 'pug');
+app.use(session({
+  secret: 'a5d63fc5-17a5-459c-b3ba-6d81792158fc',
+  resave: false,
+  saveUninitialized: false
+}))
+
+
+//Middleware
+
+app.use((req,res,next) => {
+  let {history} = req.session;
+  if (!history) {
+    history = [];
+    req.session.history = history;
+  }
+
+  const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+
+  history.unshift(url)
+})
+
+
+//Routes
 
 app.get('/', (req, res) => {
   res.render('index', { title: 'Home' });
