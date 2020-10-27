@@ -1,11 +1,13 @@
 
 const express = require('express');
-const session = require('express-session')
+const session = require('express-session');
+const store = require('connect-pg-simple')
 
 const app = express();
 
 app.set('view engine', 'pug');
 app.use(session({
+  store: new (store(session))(),
   secret: 'a5d63fc5-17a5-459c-b3ba-6d81792158fc',
   resave: false,
   saveUninitialized: false
@@ -23,7 +25,9 @@ app.use((req,res,next) => {
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
-  history.unshift(url)
+  history.unshift(url);
+
+  next();
 })
 
 
